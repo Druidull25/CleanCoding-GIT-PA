@@ -52,7 +52,7 @@ GPH *create_g(int v)
     g->alst = malloc(sizeof(NODE *) * v + 1 );
     g->vis = malloc(sizeof(int) * v + 1 );
 
-    for (int i = 0; i < v; i++)
+    for (int i = 1; i <= v; i++)
     {
         g->alst[i] = NULL;
         g->vis[i] = 0;
@@ -64,7 +64,7 @@ STK *create_s(int scap)
 {
     STK *s = malloc(sizeof(STK)*1000);
     s->arr = malloc(1000 * sizeof(int));
-    s->t = -1;
+    s->t = 0;
     s->scap = scap;
 
     return s;
@@ -80,14 +80,15 @@ void DFS(GPH *g, STK *s, int v_nr)
 {
     NODE *adj_list = g->alst[v_nr];
     NODE *aux = adj_list;
+    int con_ver;
     g->vis[v_nr] = 1;
     printf("%d ", v_nr);
     push(v_nr, s);
     while (aux != NULL)
     {
-        int con_ver = aux->data;
+        con_ver = aux->data;
 
-        if (g->vis[con_ver] == 0)
+        if (g->vis[con_ver] == 0 )
         {
             DFS(g, s, con_ver);
             printf("\nkkkkk\n");
@@ -120,37 +121,53 @@ void wipe(GPH *g, int nrv)
 } 
 
 
-void canbe(GPH *g, int nrv, STK *s1, STK *s2) // 0 sau 1 daca poate fi sau nu ajuns
+int *Canbe(GPH *g, int nrv, STK **s1, STK **s2) // 0 sau 1 daca poate fi sau nu ajuns
 {
-    int *canbe = calloc(2 * nrv, sizeof(int)); 
+    int *canbe = calloc(nrv * nrv, sizeof(int)); 
     for (int i = 1; i < nrv; i++) // aici i tine loc de numar adica de restaurant
     {
         for (int j = i + 1; j <= nrv; j++)
         {
             printf("(%d %d)\n",i,j);
-            DFS(g, s1, i);
+            DFS(g, *s1, i);
             printf("####\n");
             wipe(g, nrv);
             printf("$$$$\n");
-            DFS(g, s2, j);
-            wipe(g, nrv);
+            DFS(g, *s2, j);
             int ans = 0;
-            /*
-            for (int j = 1; j <= nrv && !ans; j++)
+
+            printf("III III\n");
+
+            for(int w=1;w<=(*s1)->t;w++)
+            printf("%d ",(*s1)->arr[w]);
+            printf("\n");
+
+            printf("IvI IvI\n");
+            for(int w=1;w<=(*s2)->t;w++)
+            printf("%d ",(*s2)->arr[w]);
+            
+            for (int l = 1; l <= nrv && !ans; l++)
             {
-                for (int i = 1; i <= nrv && !ans; i++)
+                for (int q = 1; q <= nrv && !ans; q++)
                 {
-                    if ((s1->arr[i] == j) && (s2->arr[j] == i))
-                    {
-                        *(canbe) = 1;
+                    //if (((*s1)->arr[l] == j) && ((*s2)->arr[q] == i))
+                    //{
+                        *(canbe + i + j * nrv -1) = 1;
+                        printf("\n[%d]\n",*(canbe + i + j * nrv -1));
                         ans=1;
-                    }
+                    //}
                 }
 
              }
-             */
+
+            *s1 = create_s(2 * nrv);
+            *s2 = create_s(2 * nrv);
+
+             
         }
     }
+
+    return canbe;
 
 }
 
@@ -173,6 +190,10 @@ int main()
 
     insert_edges(g, edg_nr, nrv );
 
-    canbe(g, nrv, s1, s2);
+    int *m;
+
+    m=Canbe(g, nrv, &s1, &s2);
+    for(int i = 0;i < nrv * nrv; i++)
+    printf("%d ",*(m + i));
 
 }
