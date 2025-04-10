@@ -12,8 +12,6 @@
 /// pentru simplitate, folosim int uri pt a numi restaurantel/locatiile
 /// ex: 1 - restaurantul 1 si tot asa
 
-
-
 typedef struct g
 {
     int v;
@@ -51,8 +49,8 @@ GPH *create_g(int v)
     int i;
     GPH *g = malloc(sizeof(GPH));
     g->v = v;
-    g->alst = malloc(sizeof(NODE *));
-    g->vis = malloc(sizeof(int) * v);
+    g->alst = malloc(sizeof(NODE *) * v + 1 );
+    g->vis = malloc(sizeof(int) * v + 1 );
 
     for (int i = 0; i < v; i++)
     {
@@ -64,8 +62,8 @@ GPH *create_g(int v)
 
 STK *create_s(int scap)
 {
-    STK *s = malloc(sizeof(STK));
-    s->arr = malloc(scap * sizeof(int));
+    STK *s = malloc(sizeof(STK)*1000);
+    s->arr = malloc(1000 * sizeof(int));
     s->t = -1;
     s->scap = scap;
 
@@ -88,8 +86,14 @@ void DFS(GPH *g, STK *s, int v_nr)
     while (aux != NULL)
     {
         int con_ver = aux->data;
+
         if (g->vis[con_ver] == 0)
+        {
             DFS(g, s, con_ver);
+            printf("\nkkkkk\n");
+
+        }
+
         aux = aux->next;
     }
 }
@@ -97,8 +101,10 @@ void DFS(GPH *g, STK *s, int v_nr)
 void insert_edges(GPH *g, int edg_nr, int nrv)
 {
     int src, dest, i;
+
     printf("adauga %d munchii (de la 1 la %d)\n", edg_nr, nrv);
-    for (i = 0; i < edg_nr; i++)
+
+    for (i = 1; i <= edg_nr; i++)
     {
         scanf("%d%d", &src, &dest);
         add_edge(g, src, dest);
@@ -107,49 +113,51 @@ void insert_edges(GPH *g, int edg_nr, int nrv)
 
 void wipe(GPH *g, int nrv)
 {
-    for (int i = 0; i < nrv; i++)
+    for (int i = 0; i <= nrv; i++)
     {
         g->vis[i] = 0;
     }
 } 
 
 
-    int canbe(GPH *g, int nrv, STK *s1, STK *s2) // 0 sau 1 daca poate fi sau nu ajuns
+void canbe(GPH *g, int nrv, STK *s1, STK *s2) // 0 sau 1 daca poate fi sau nu ajuns
 {
-    int canbe = 0;
-    for (int i = 0; i < nrv; i++) // aici i tine loc de numar adica de restaurant
+    int *canbe = calloc(2 * nrv, sizeof(int)); 
+    for (int i = 1; i < nrv; i++) // aici i tine loc de numar adica de restaurant
     {
-        for (int j = 0; j < 5; j++)
+        for (int j = i + 1; j <= nrv; j++)
         {
+            printf("(%d %d)\n",i,j);
             DFS(g, s1, i);
+            printf("####\n");
             wipe(g, nrv);
+            printf("$$$$\n");
             DFS(g, s2, j);
-            for (int j = 0; j < nrv && !canbe; j++)
+            wipe(g, nrv);
+            int ans = 0;
+            /*
+            for (int j = 1; j <= nrv && !ans; j++)
             {
-                for (int i = 0; i < nrv && !canbe; i++)
+                for (int i = 1; i <= nrv && !ans; i++)
                 {
                     if ((s1->arr[i] == j) && (s2->arr[j] == i))
-                        canbe = 1;
+                    {
+                        *(canbe) = 1;
+                        ans=1;
+                    }
                 }
 
-            }
+             }
+             */
         }
     }
 
-    return canbe;
-    
 }
 
 int main()
 {
 
-    int nrv;
-    int edg_nr;
-    int src, dest;
-    int i;
-    int vortex_1;
-    int virtex_2;
-    int ans;
+    int nrv, edg_nr, src, dest, i, vortex_1, virtex_2, ans,*smt;
 
     printf("cate noduri are graful?");
     scanf("%d", &nrv);
@@ -157,13 +165,14 @@ int main()
     printf("cate muchii are graful?");
     scanf("%d", &edg_nr);
 
-    GPH *g = create_g(&nrv);
+    GPH *g = create_g(nrv);
     
 
     STK *s1 = create_s(2 * nrv);
     STK *s2 = create_s(2 * nrv);
 
-    insert_edges(g, edg_nr, nrv);
+    insert_edges(g, edg_nr, nrv );
 
-    printf("%d ",canbe(g, nrv, s1, s2));
+    canbe(g, nrv, s1, s2);
+
 }
