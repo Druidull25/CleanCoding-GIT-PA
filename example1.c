@@ -124,17 +124,18 @@ int *Canbe(GPH *g, int nrv, STK **s1, STK **s2) // 0 sau 1 daca poate fi sau nu 
     int *canbe = calloc(nrv * nrv, sizeof(int)); 
     for (int i = 1; i < nrv; i++) // aici i tine loc de numar adica de restaurant
     {
-        for (int j = i + 1; j <= nrv; j++)
+        for (int j = i + 1; j <= nrv; j++) // si j tine loc de numar de restaurant
         {
             DFS(g, *s1, i);
             wipe(g, nrv);
             DFS(g, *s2, j);
             wipe(g, nrv);
+
             int ans = 0;
             
-            for (int l = 1; l <= (*s1)->t && !ans; l++)
+            for (int l = 1; l <= (*s1)->t && !ans; l++) //parcurgem stack-ul 1
             {
-                for (int q = 1; q <= (*s2)->t && !ans; q++)
+                for (int q = 1; q <= (*s2)->t && !ans; q++) // parcurgem stack-ul 2
                 {
                     if (((*s1)->arr[l] == j) && ((*s2)->arr[q] == i))
                     {
@@ -145,8 +146,11 @@ int *Canbe(GPH *g, int nrv, STK **s1, STK **s2) // 0 sau 1 daca poate fi sau nu 
 
              }
 
-            *s1 = create_s(2 * nrv);
-            *s2 = create_s(2 * nrv);
+            free(*s1); //golim stack-ul 1
+            free(*s2); //golim stack-ul 2
+
+            *s1 = create_s(2 * nrv); //realocam spatiu pentru stack-ul 1
+            *s2 = create_s(2 * nrv); //realocam spatiu pentru stack-ul 2
 
              
         }
