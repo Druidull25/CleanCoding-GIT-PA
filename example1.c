@@ -82,7 +82,6 @@ void DFS(GPH *g, STK *s, int v_nr)
     NODE *aux = adj_list;
     int con_ver;
     g->vis[v_nr] = 1;
-    printf("%d ", v_nr);
     push(v_nr, s);
     while (aux != NULL)
     {
@@ -91,7 +90,6 @@ void DFS(GPH *g, STK *s, int v_nr)
         if (g->vis[con_ver] == 0 )
         {
             DFS(g, s, con_ver);
-            printf("\nkkkkk\n");
 
         }
 
@@ -128,34 +126,21 @@ int *Canbe(GPH *g, int nrv, STK **s1, STK **s2) // 0 sau 1 daca poate fi sau nu 
     {
         for (int j = i + 1; j <= nrv; j++)
         {
-            printf("(%d %d)\n",i,j);
             DFS(g, *s1, i);
-            printf("####\n");
             wipe(g, nrv);
-            printf("$$$$\n");
             DFS(g, *s2, j);
+            wipe(g, nrv);
             int ans = 0;
-
-            printf("III III\n");
-
-            for(int w=1;w<=(*s1)->t;w++)
-            printf("%d ",(*s1)->arr[w]);
-            printf("\n");
-
-            printf("IvI IvI\n");
-            for(int w=1;w<=(*s2)->t;w++)
-            printf("%d ",(*s2)->arr[w]);
             
-            for (int l = 1; l <= nrv && !ans; l++)
+            for (int l = 1; l <= (*s1)->t && !ans; l++)
             {
-                for (int q = 1; q <= nrv && !ans; q++)
+                for (int q = 1; q <= (*s2)->t && !ans; q++)
                 {
-                    //if (((*s1)->arr[l] == j) && ((*s2)->arr[q] == i))
-                    //{
-                        *(canbe + i + j * nrv -1) = 1;
-                        printf("\n[%d]\n",*(canbe + i + j * nrv -1));
-                        ans=1;
-                    //}
+                    if (((*s1)->arr[l] == j) && ((*s2)->arr[q] == i))
+                    {
+                        *(canbe + j + (i - 1) * nrv -1) = *(canbe + i + (j - 1) * nrv -1) = 1;
+                        ans = 1;
+                    }
                 }
 
              }
@@ -191,9 +176,21 @@ int main()
     insert_edges(g, edg_nr, nrv );
 
     int *m;
-
-    m=Canbe(g, nrv, &s1, &s2);
+    m = Canbe(g, nrv, &s1, &s2);
+    
     for(int i = 0;i < nrv * nrv; i++)
-    printf("%d ",*(m + i));
+    {
+        if(*(m + i))
+        {
+            printf("Exista drum intre %d si %d.\n",(i / nrv + 1),( i % nrv + 1));
+        }
 
+        else
+
+        if((i / nrv + 1)!=(i % nrv + 1))
+        {
+            printf("Nu exista drum intre %d si %d.\n",( i / nrv + 1),( i % nrv + 1));
+
+        }
+    }
 }
