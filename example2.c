@@ -30,10 +30,10 @@ GPH *create_graph(int vertices)
     int i;
     GPH *graph = malloc(sizeof(GPH));
     graph->vertices = vertices;
-    graph->adjacency_lists = malloc(vertices * sizeof(NODE *));
+    graph->adjacency_lists = malloc(2000 * sizeof(NODE *));
 
     graph->visited = malloc(sizeof(int) * vertices);
-    for (int i = 0; i < vertices; i++)
+    for (int i = 1; i <= vertices; i++)
     {
         graph->adjacency_lists[i] = NULL;
         graph->visited[i] = 0;
@@ -42,27 +42,27 @@ GPH *create_graph(int vertices)
 }
 
 
-void add_edge(GPH *graph, int src, int dest)
+void add_edge(GPH **graph, int src, int dest)
 {
     NODE *new_node = create_node(dest);
 
-    new_node->next = graph->adjacency_lists[src];
-    graph->adjacency_lists[src] = new_node;
+    new_node->next = (*graph)->adjacency_lists[src];
+    (*graph)->adjacency_lists[src] = new_node;
 
     new_node = create_node(src);
 
-    new_node->next = graph->adjacency_lists[dest];
-    graph->adjacency_lists[dest] = new_node;
+    new_node->next = (*graph)->adjacency_lists[dest];
+    (*graph)->adjacency_lists[dest] = new_node;
 }
 
 
-int *insedg(int nr_of_vertices, int nr_of_edges, GPH *graph)
+int *insedg(int nr_of_vertices, int nr_of_edges, GPH **graph)
 {
     int src, dest, i;
     printf("adauga %d muchii (de la 1 la %d)\n", nr_of_edges, nr_of_vertices);
     for (i = 0; i < nr_of_edges; i++)
     {
-        scanf("%d%d", &src, *&dest);
+        scanf("%d%d", &src, &dest);
         add_edge(graph, src, dest);
     }
 }
@@ -102,7 +102,7 @@ int dequeue(NODE **queue)
 void print_graph(GPH *graph)
 {
     int i;
-    for (i = 0; i < graph->vertices; i++ )
+    for (i = 1; i <= graph->vertices; i++ )
     {
         NODE *temp = graph->adjacency_lists[i];
 
@@ -126,7 +126,7 @@ void print_queue(NODE *queue)
 
 void wipe_visited_list(GPH *graph, int nr_of_vertices)
 {
-    for (int i = 0; i < nr_of_vertices; i++)
+    for (int i = 1; i <= nr_of_vertices; i++)
     {
         graph->visited[i] = 0;
     }
@@ -142,10 +142,11 @@ void DFS(GPH *graph, int vertex_nr)
 
     while (temp != NULL)
     {
+
         int connected_vertex = temp->data;
 
         if (graph->visited[connected_vertex] == 0)
-        {
+        {   
             DFS(graph, connected_vertex);
         }
         temp = temp->next;
@@ -196,7 +197,7 @@ int main()
 
     GPH *graph = create_graph(nr_of_vertices);
 
-    insedg(nr_of_vertices, nr_of_edges, graph);
+    insedg(nr_of_vertices, nr_of_edges, &graph);
 
     printf("de unde plecam in DFS?");
     scanf("%d", &(starting_vertex));
